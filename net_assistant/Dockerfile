@@ -1,14 +1,17 @@
 ARG BUILD_FROM
 FROM $BUILD_FROM
 
-# Install dependencies config. Python and Node.js
+# Install dependencies: Python, Node.js, and build tools for python packages
 RUN apk add --no-cache \
     nodejs \
     npm \
     python3 \
     py3-pip \
-    uv \
-    bash
+    bash \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev
 
 # Copy root filesystem
 COPY rootfs /
@@ -28,7 +31,6 @@ COPY backend /app/backend
 RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 
 # Copy frontend build to backend static files location
-# We will serve this via FastAPI
 RUN mkdir -p /app/backend/dist && cp -r /app/frontend/dist/* /app/backend/dist/
 
 WORKDIR /
